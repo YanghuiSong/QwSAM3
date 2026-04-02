@@ -1,0 +1,60 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+.venv/
+env/
+venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Data and Models
+*.pt
+*.pth
+*.ckpt
+*.model
+data/
+datasets/
+models/
+
+# Temporary and Result Files
+results/
+temp_results/
+full_seg_results/
+accurate_results/
+*.json
+
+# Logs
+*.log
+logs/
+
+# Large files that shouldn't be committed
+test_data/
+testdata/
