@@ -58,6 +58,12 @@ python eval.py --config configs/cfg_DATASET_pgrf_max.py
 
 Replace `DATASET` with the desired dataset name (e.g., `vaihingen`, `potsdam`).
 
+## Visualization
+
+```bash
+python visualize_segmentation.py --input-path images/ --output-dir results/
+```
+
 ## Acknowledgments
 
 This work is based on [SAM 3](https://github.com/facebookresearch/sam3) and [SegEarth‑OV3](https://github.com/earth-insights/SegEarth-OV-3). We thank the authors for their excellent open‑source contributions.
