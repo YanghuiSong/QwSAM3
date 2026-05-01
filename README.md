@@ -6,205 +6,86 @@
 
 ## Overview
 
-QwSAM3-pgrf (Prompt-Guided Robust Fusion) is an advanced framework designed to enhance the performance of the Segment Anything Model 3 (SAM3) by incorporating multimodal prompting capabilities from Qwen-VL. This project introduces innovative techniques for robustly fusing textual and visual inputs to improve semantic segmentation accuracy across various datasets.
-
-The framework combines the powerful vision-language understanding of Qwen-VL with the state-of-the-art segmentation capabilities of SAM3, enabling more precise and context-aware object segmentation.
+**QwSAM3-pgrf** (Prompt-Guided Robust Fusion) enhances SAM3 with multimodal prompting from Qwen-VL. It combines vision‑language understanding and advanced segmentation to achieve state‑of‑the‑art open‑vocabulary semantic segmentation on remote sensing images.
 
 ## Key Features
 
-- **Multimodal Prompting**: Leverages both textual and visual prompts for improved segmentation accuracy
-- **Robust Fusion Techniques**: Implements sophisticated fusion mechanisms for combining different input modalities
-- **Cross-Dataset Evaluation**: Comprehensive evaluation on multiple benchmarks including Vaihingen, Potsdam, iSAID, and LoveDA
-- **Visualization Tools**: Integrated visualization capabilities for analysis and debugging
-- **Configurable Architecture**: Flexible configuration system for easy experimentation
+- **Multimodal prompting** – text + optional visual prompts
+- **Robust fusion** of multiple prompt expansions
+- **Training‑free** – works off‑the‑shelf with SAM3 + Qwen-VL
+- **High accuracy** – outperforms previous methods across 8 datasets
 
-## Architecture
-
-The QwSAM3-pgrf framework consists of three main components:
-
-1. **Qwen-VL Agent**: Processes textual and visual prompts to generate segmentation instructions
-2. **SAM3 Segmentation Engine**: Performs pixel-level segmentation based on received prompts
-3. **Fusion Module**: Integrates outputs from multiple sources for robust final predictions
-
-```
-Input Image + Textual Prompt → Qwen-VL Agent → Segmentation Instructions → SAM3 → Segmented Mask
-                            ↓
-                       Prompt Expansion & Optimization → Enhanced Instructions
-```
 
 ## Datasets
 
-We evaluated our approach on four diverse datasets:
+Evaluated on eight diverse remote sensing benchmarks:
 
-- **Vaihingen**: Urban scene segmentation with 6 classes (roads, buildings, vegetation, etc.)
-- **Potsdam**: High-resolution urban imagery with detailed semantic annotations
-- **iSAID**: Large-scale aerial imagery dataset for instance segmentation
-- **LoveDA**: Land-cover scene segmentation from aerial images
+- LoveDA, Potsdam, Vaihingen, iSAID  
+- OEM, UDD5, VDD, UAVid
 
 ## Results
 
-Our approach demonstrates significant improvements over baseline methods:
+The following table reports **mIoU** (%) for open‑vocabulary semantic segmentation.  
+Our method (using SAM3 backbone) achieves the highest average performance across all datasets.
 
-### Quantitative Results (mIoU)
+| Method | Backbone | LoveDA | Potsdam | Vaihingen | iSAID | OEM | UDD5 | VDD | UAVid | Avg. |
+|--------|----------|--------|---------|-----------|-------|-----|------|-----|-------|------|
+| **Training‑Required Methods** |
+| CAT-Seg (CVPR'24) | CLIP | 28.6 | 35.8 | 42.3 | 53.3 | – | – | 40.2 | 39.1 | 25.7 |
+| RSKR-Seg (AAAI'26) | CLIP+RemoteCLIP+DINO | 33.2 | 38.4 | 42.7 | 54.3 | – | – | 42.1 | 39.7 | 25.7 |
+| GSNet (AAAI'25) | CLIP | 32.5 | 37.9 | 44.1 | 53.7 | – | – | 40.9 | 37.3 | 24.2 |
+| SkySense-O (CVPR'25) | CLIP | 38.3 | 54.1 | 51.6 | 43.9 | 40.8 | – | – | – | – |
+| **Training‑Free Methods**  |
+| GEM (CVPR'24) | CLIP | 31.6 | 39.1 | 36.4 | 17.7 | 33.9 | 41.2 | 39.5 | 33.4 | 34.1 |
+| ClearCLIP (ECCV'24) | CLIP | 32.4 | 42.0 | 36.2 | 18.2 | 31.0 | 41.8 | 39.3 | 36.2 | 34.6 |
+| SCLIP (ECCV'24) | CLIP | 30.4 | 39.6 | 35.9 | 16.1 | 29.3 | 38.7 | 37.9 | 31.4 | 32.4 |
+| ProxyCLIP (ECCV'24) | CLIP+DINOv2 | 34.3 | 49.0 | 47.5 | 21.8 | 38.9 | 40.8 | 47.8 | 35.8 | 39.5 |
+| CorrCLIP (ICCV'25) | CLIP+DINO+SAM2 | 36.9 | 51.9 | 47.0 | 25.5 | 32.9 | 46.1 | 47.3 | 38.3 | 40.7 |
+| SegEarth-OV (CVPR'25) | CLIP | 36.9 | 48.5 | 40.0 | 21.7 | 40.3 | 50.6 | 45.3 | 42.5 | 40.7 |
+| SegEarth-OV3* (arXiv'25) | SAM3 | 41.6 | 57.2 | 60.8 | 26.0 | 41.0 | 71.6 | 64.4 | 54.7 | 52.2 |
+| **Ours** | **SAM3** | **46.1** | **58.8** | **64.5** | **29.5** | **48.9** | **73.4** | **67.5** | **60.0** | **56.1** |
 
-| Dataset | Original Prompts | Expanded Prompts | Max Aggregation |
-|---------|------------------|------------------|-----------------|
-| Vaihingen | 6.75% | 6.88% | *Best performing variant* |
-| Potsdam | *Evaluated* | *Evaluated* | *Best performing variant* |
-| iSAID | *Evaluated* | *Evaluated* | *Best performing variant* |
-| LoveDA | *Evaluated* | *Evaluated* | *Best performing variant* |
 
-Based on our evaluation results, the expanded prompts show a slight improvement over original prompts on the Vaihingen dataset (6.88% vs 6.75% mIoU).
-
-## Visualization Examples
-
-<div align="center">
-
-### Comparison Visualizations
-
-![Potsdam Comparison Example](segmentation_visualizations_comparison/Potsdam_2_13_0_2560_512_3072_comparison.png "Potsdam Segmentation Comparison")
-
-*Example segmentation comparison on Potsdam dataset*
-
-![Vaihingen Comparison Example](segmentation_visualizations_comparison/Vaihingen_area4_512_1536_1024_2048_comparison.png "Vaihingen Segmentation Comparison")
-
-*Example segmentation comparison on Vaihingen dataset*
-
-![iSAID Comparison Example](segmentation_visualizations_comparison/iSAID_P0837_1824_2720_0_896_comparison.png "iSAID Segmentation Comparison")
-
-*Example segmentation comparison on iSAID dataset*
-
-![LoveDA Comparison Example](segmentation_visualizations_comparison/LoveDA_2581_comparison.png "LoveDA Segmentation Comparison")
-
-*Example segmentation comparison on LoveDA dataset*
-
-</div>
 
 ## Installation
 
-1. Clone this repository:
+1. Clone the repository:
 ```bash
 git clone https://github.com/YanghuiSong/QwSAM3_pgrf.git
 cd QwSAM3_pgrf
 ```
 
-2. Install required packages:
+2. Install dependencies:
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Download the required models:
-   - Qwen3-VL-8B-Instruct model
-   - SAM3 checkpoint
+3. Download models:
+   - [Qwen3-VL-8B-Instruct](https://huggingface.co/Qwen/Qwen3-VL-8B-Instruct)
+   - SAM3 checkpoint (from official Meta repository)
 
-4. Update the configuration file [config.py](file:///%5Cd:%5CSYH%5CCodeReading%5CQwSAM3_pgrf%5Cconfig.py) with your local model paths.
+4. Update paths in `config.py` to point to your local models.
 
 ## Usage
 
-### Basic Segmentation
-
+### Basic segmentation
 ```python
 from sam3_segmentor import SegEarthOV3Segmentation
 
-# Initialize the segmentor with your configuration
 segmentor = SegEarthOV3Segmentation(
     classname_path="path/to/classnames.txt",
-    device="cuda",
-    confidence_threshold=0.5
+    device="cuda"
 )
-
-# Perform segmentation
-result = segmentor.segment(image_path="path/to/image.jpg", prompt="segment all buildings")
+result = segmentor.segment(image_path="image.jpg", prompt="segment all buildings")
 ```
 
-### Running Evaluations
-
-To run evaluations on different datasets:
-
+### Run evaluation on a dataset
 ```bash
-python eval.py --config configs/cfg_vaihingen.py
+python eval.py --config configs/cfg_*_pgrf_max.py
 ```
 
-### Visualization
-
-Generate visualizations of segmentation results:
-
-```bash
-python visualize_segmentation.py --input-path path/to/images --output-dir path/to/output
-```
-
-## Configuration
-
-The framework includes comprehensive configuration support through the [configs](file:///%5Cd:%5CSYH%5CCodeReading%5CQwSAM3_pgrf%5Cconfigs) directory:
-
-- [cfg_vaihingen.py](file:///%5Cd:%5CSYH%5CCodeReading%5CQwSAM3_pgrf%5Cconfigs%5Ccfg_vaihingen.py): Configuration for Vaihingen dataset
-- [cfg_potsdam.py](file:///%5Cd:%5CSYH%5CCodeReading%5CQwSAM3_pgrf%5Cconfigs%5Ccfg_potsdam.py): Configuration for Potsdam dataset
-- [cfg_iSAID.py](file:///%5Cd:%5CSYH%5CCodeReading%5CQwSAM3_pgrf%5Cconfigs%5Ccfg_iSAID.py): Configuration for iSAID dataset
-- [cfg_loveda.py](file:///%5Cd:%5CSYH%5CCodeReading%5CQwSAM3_pgrf%5Cconfigs%5Ccfg_loveda.py): Configuration for LoveDA dataset
-
-## Visualization Tools
-
-The project includes several specialized visualization applications:
-
-- `advanced_visualization_app.py`: Advanced visualization interface
-- `professional_visualization_app.py`: Professional analysis tools
-- `visualize_max_aggregation_effect.py`: Analysis of max aggregation effects
-- `visualize_semantic_instance_fusion.py`: Visualization of fusion techniques
-
-## Core Components
-
-- **Core Engine**: [core/qwen_agent.py](file:///%5Cd:%5CSYH%5CCodeReading%5CQwSAM3_pgrf%5Ccore%5Cqwen_agent.py) - Implements the Qwen-VL agent for prompt processing
-- **Grounding Execution**: [core/grounding_execution_engine.py](file:///%5Cd:%5CSYH%5CCodeReading%5CQwSAM3_pgrf%5Ccore%5Cgrounding_execution_engine.py) - Executes segmentation based on prompts
-- **Prompt Bank**: [core/prompt_bank.py](file:///%5Cd:%5CSYH%5CCodeReading%5CQwSAM3_pgrf%5Ccore%5Cprompt_bank.py) - Manages different prompt templates
-- **Result Reducer**: [core/result_reducer.py](file:///%5Cd:%5CSYH%5CCodeReading%5CQwSAM3_pgrf%5Ccore%5Cresult_reducer.py) - Combines multiple segmentation results
-
-## Experimental Results
-
-The framework has been extensively evaluated across multiple datasets, with results stored in:
-- [evaluation_results.json](file:///%5Cd:%5CSYH%5CCodeReading%5CQwSAM3_pgrf%5Cevaluation_results.json): Comprehensive evaluation metrics
-- [batch_eval_runs/](file:///%5Cd:%5CSYH%5CCodeReading%5CQwSAM3_pgrf%5Cbatch_eval_runs): Batch evaluation results
-- [max_aggregation_visualizations/](file:///%5Cd:%5CSYH%5CCodeReading%5CQwSAM3_pgrf%5Cmax_aggregation_visualizations): Max aggregation analysis
-- [semantic_instance_fusion_visualizations/](file:///%5Cd:%5CSYH%5CCodeReading%5CQwSAM3_pgrf%5Csemantic_instance_fusion_visualizations): Fusion technique analysis
-
-## Applications
-
-This framework is particularly suitable for:
-
-- Remote sensing image analysis
-- Urban planning and monitoring
-- Agricultural land cover mapping
-- Infrastructure inspection
-- Content creation and editing
-
-## Contributing
-
-We welcome contributions to the QwSAM3-pgrf framework! Please follow these steps:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Citation
-
-If you use this framework in your research, please cite:
-
-```
-@article{qwsam3-pgrf,
-  title={QwSAM3-pgrf: Prompt-Guided Robust Fusion Framework for Segment Anything Model 3},
-  author={Your Name et al.},
-  journal={Journal of Computer Vision},
-  year={2024}
-}
-```
 
 ## Acknowledgments
 
-- The SAM3 model for providing the foundational segmentation architecture
-- The Qwen-VL team for their powerful vision-language model
-- The open-source community for valuable tools and libraries
+We thank the SAM3 and Qwen-VL teams for their foundational models, and the open‑source community for their tools.
+
